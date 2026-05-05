@@ -123,9 +123,10 @@ pub mod avax_points_exchange {
             .ok_or(ExchangeError::MathOverflow)?;
         user_points.last_exchange_time = Clock::get()?.unix_timestamp;
 
+        let config_key = config.key();
         let signer_seeds: &[&[&[u8]]] = &[&[
             VaultAuthority::SEED_PREFIX,
-            config.key().as_ref(),
+            config_key.as_ref(),
             &[ctx.bumps.vault_authority],
         ]];
         let transfer_accounts = Transfer {
@@ -175,9 +176,10 @@ pub mod avax_points_exchange {
             ExchangeError::InvalidMint
         );
 
+        let config_key = ctx.accounts.config.key();
         let signer_seeds: &[&[&[u8]]] = &[&[
             VaultAuthority::SEED_PREFIX,
-            ctx.accounts.config.key().as_ref(),
+            config_key.as_ref(),
             &[ctx.bumps.vault_authority],
         ]];
         let transfer_accounts = Transfer {
