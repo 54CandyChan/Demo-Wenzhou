@@ -1,95 +1,96 @@
-# ATX Points Exchange
+# AVAX Points Exchange
 
-这是根据需求文档生成的一套 Anchor 0.29.0 合约骨架，包含：
+This project contains an Anchor 0.29.0 Solana contract scaffold with the corrected exchange rule:
 
-- `programs/atx_points_exchange/src/lib.rs`：Solana Rust 智能合约
-- `client/atx-points-exchange.ts`：前端调用工具
-- `client/lovable-withdraw-button.tsx`：可直接嵌入 Lovable/React 页面“提现”按钮的示例组件
+- `1000 points = 0.001 AVAX`
 
-## 已实现的链上能力
+Included files:
 
-- 初始化全局配置 `initialize_config`
-- 管理员增加积分 `add_user_points`
-- 管理员扣减积分 `sub_user_points`
-- 管理员暂停或恢复兑换 `toggle_pause`
-- 用户兑换积分 `exchange_points`
-- 管理员提取 ATX `withdraw_tokens`
+- `programs/avax_points_exchange/src/lib.rs`: Solana Rust smart contract
+- `client/avax-points-exchange.ts`: frontend helper for wallet calls
+- `client/lovable-avax-withdraw-button.tsx`: Lovable/React withdraw button example
 
-## 重要说明
+## Implemented Features
 
-1. Solana 合约本身不能像传统后端 API 一样直接返回动态数组，所以文档中的：
+- `initialize_config`
+- `add_user_points`
+- `sub_user_points`
+- `toggle_pause`
+- `exchange_points`
+- `withdraw_tokens`
+
+## Important Notes
+
+1. Solana programs do not directly return dynamic arrays like a normal backend API.
+   Use account reads from `client/avax-points-exchange.ts` for:
    - `get_user_points(user_pubkey)`
    - `get_exchange_records(user_pubkey)`
    - `get_global_config()`
 
-   这里已经通过 `client/atx-points-exchange.ts` 里的账户查询方法来实现，前端直接读 PDA 账户即可。
-
-2. 当前程序 ID 使用的是 Anchor 默认占位值：
-
-   - `programs/atx_points_exchange/src/lib.rs`
+2. The current Program ID is still a placeholder and must be replaced before deployment.
+   Update both:
+   - `programs/avax_points_exchange/src/lib.rs`
    - `Anchor.toml`
 
-   在你正式部署前，必须替换成你自己的 Program ID。
+3. `initialize_config` creates the program vault token account for the AVAX SPL token mint.
+   The admin must deposit enough AVAX tokens into that vault before users can exchange points.
 
-3. `initialize_config` 会自动创建合约金库的 ATX Token Account。
-   管理员需要先把足量的 ATX 充值到该金库账户，用户兑换时才能成功转账。
+## Build And Deploy
 
-## 编译与部署
-
-### 1. 安装依赖
+### 1. Install Dependencies
 
 - Rust 1.75+
 - Solana CLI
 - Anchor CLI 0.29.0
 
-### 2. 编译
+### 2. Build
 
 ```bash
 anchor build
 ```
 
-### 3. 部署
+### 3. Deploy
 
 ```bash
 anchor deploy
 ```
 
-部署完成后，把新的 Program ID 同步替换到：
+After deployment, replace the generated Program ID in:
 
-- `programs/atx_points_exchange/src/lib.rs`
+- `programs/avax_points_exchange/src/lib.rs`
 - `Anchor.toml`
-- 你的前端环境变量或 Lovable 配置
+- your frontend environment config
 
-### 4. 初始化配置
+### 4. Initialize Config
 
-部署后，管理员钱包需要调用 `initialize_config`，并传入：
+After deployment, call `initialize_config` with:
 
-- `atx_mint`
+- `avax_mint`
 
-### 5. 前端按钮接入
+### 5. Lovable Button Integration
 
-在页面中引入：
+Import:
 
 ```tsx
-import { AtxWithdrawButton } from "./client/lovable-withdraw-button";
+import { AvaxWithdrawButton } from "./client/lovable-avax-withdraw-button";
 ```
 
-然后向组件传入：
+Pass these props:
 
 - `connection`
 - `wallet`
 - `programId`
-- `atxMint`
+- `avaxMint`
 
-按钮点击后会：
+When the button is clicked it will:
 
-1. 查询当前钱包积分
-2. 判断是否大于等于 1000
-3. 拉起钱包签名
-4. 调用链上 `exchange_points`
+1. Check the current wallet points balance
+2. Verify the wallet has at least `1000` points
+3. Request wallet signature
+4. Call on-chain `exchange_points`
 
-## 后续建议
+## Suggested Next Steps
 
-- 增加 Anchor 测试文件，覆盖积分不足、暂停状态、金库余额不足等场景
-- 把管理员接口再包一层后台服务，避免直接在前端暴露管理操作
-- 部署前补齐生产环境 Program ID、Mint 地址和 RPC 配置
+- Add Anchor tests for insufficient points, paused state, and low vault balance
+- Wrap admin instructions behind a backend service instead of exposing them in the browser
+- Replace the placeholder Program ID, mint address, and RPC settings before production

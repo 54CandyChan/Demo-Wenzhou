@@ -1,12 +1,12 @@
 [package]
-name = "atx_points_exchange"
+name = "avax_points_exchange"
 version = "0.1.0"
-description = "ATX points exchange program built with Anchor."
+description = "AVAX points exchange program built with Anchor."
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "atx_points_exchange"
+name = "avax_points_exchange"
 
 [features]
 no-entrypoint = []

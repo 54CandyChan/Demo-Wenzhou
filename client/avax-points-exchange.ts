@@ -12,7 +12,7 @@ import {
 } from "@solana/spl-token";
 import type { Connection, PublicKey, TransactionSignature } from "@solana/web3.js";
 import { SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
-import { ATX_POINTS_EXCHANGE_IDL } from "./atx-points-exchange.idl";
+import { AVAX_POINTS_EXCHANGE_IDL } from "./avax-points-exchange.idl";
 
 type BrowserWallet = {
   publicKey: PublicKey | null;
@@ -30,7 +30,7 @@ export function getExchangeProgram(
   connection: Connection,
   wallet: BrowserWallet,
   programId: PublicKey,
-  idl: Idl = ATX_POINTS_EXCHANGE_IDL,
+  idl: Idl = AVAX_POINTS_EXCHANGE_IDL,
 ) {
   const provider = new AnchorProvider(connection, wallet as never, {
     commitment: "confirmed",
@@ -42,9 +42,9 @@ export function getExchangeProgram(
 export async function deriveExchangeAddresses(
   programId: PublicKey,
   user: PublicKey,
-  atxMint: PublicKey,
+  avaxMint: PublicKey,
   connection?: Connection,
-  idl: Idl = ATX_POINTS_EXCHANGE_IDL,
+  idl: Idl = AVAX_POINTS_EXCHANGE_IDL,
 ) {
   const [configPda] = PublicKey.findProgramAddressSync([GLOBAL_CONFIG_SEED], programId);
   const [userPointsPda] = PublicKey.findProgramAddressSync(
@@ -78,8 +78,8 @@ export async function deriveExchangeAddresses(
     programId,
   );
 
-  const vaultTokenAccount = getAssociatedTokenAddressSync(atxMint, vaultAuthorityPda, true);
-  const userTokenAccount = getAssociatedTokenAddressSync(atxMint, user);
+  const vaultTokenAccount = getAssociatedTokenAddressSync(avaxMint, vaultAuthorityPda, true);
+  const userTokenAccount = getAssociatedTokenAddressSync(avaxMint, user);
 
   return {
     configPda,
@@ -95,10 +95,10 @@ export async function exchangePoints(params: {
   connection: Connection;
   wallet: BrowserWallet;
   programId: PublicKey;
-  atxMint: PublicKey;
+  avaxMint: PublicKey;
   idl?: Idl;
 }): Promise<TransactionSignature> {
-  const { connection, wallet, programId, atxMint, idl = ATX_POINTS_EXCHANGE_IDL } = params;
+  const { connection, wallet, programId, avaxMint, idl = AVAX_POINTS_EXCHANGE_IDL } = params;
 
   if (!wallet.publicKey) {
     throw new Error("Wallet not connected.");
@@ -108,7 +108,7 @@ export async function exchangePoints(params: {
   const addresses = await deriveExchangeAddresses(
     programId,
     wallet.publicKey,
-    atxMint,
+    avaxMint,
     connection,
     idl,
   );
@@ -120,7 +120,7 @@ export async function exchangePoints(params: {
       config: addresses.configPda,
       userPoints: addresses.userPointsPda,
       exchangeRecord: addresses.exchangeRecordPda,
-      atxMint,
+      avaxMint,
       vaultAuthority: addresses.vaultAuthorityPda,
       vaultTokenAccount: addresses.vaultTokenAccount,
       userTokenAccount: addresses.userTokenAccount,
@@ -138,7 +138,7 @@ export async function fetchUserPoints(params: {
   programId: PublicKey;
   idl?: Idl;
 }) {
-  const { connection, walletAddress, programId, idl = ATX_POINTS_EXCHANGE_IDL } = params;
+  const { connection, walletAddress, programId, idl = AVAX_POINTS_EXCHANGE_IDL } = params;
   const [userPointsPda] = PublicKey.findProgramAddressSync(
     [USER_POINTS_SEED, walletAddress.toBuffer()],
     programId,
@@ -161,7 +161,7 @@ export async function fetchExchangeRecords(params: {
   programId: PublicKey;
   idl?: Idl;
 }) {
-  const { connection, walletAddress, programId, idl = ATX_POINTS_EXCHANGE_IDL } = params;
+  const { connection, walletAddress, programId, idl = AVAX_POINTS_EXCHANGE_IDL } = params;
   const provider = new AnchorProvider(
     connection,
     {

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Connection, PublicKey } from "@solana/web3.js";
-import { exchangePoints, fetchUserPoints } from "./atx-points-exchange";
+import { exchangePoints, fetchUserPoints } from "./avax-points-exchange";
 
 type BrowserWallet = {
   publicKey: PublicKey | null;
@@ -12,15 +12,15 @@ type WithdrawButtonProps = {
   connection: Connection;
   wallet: BrowserWallet;
   programId: PublicKey;
-  atxMint: PublicKey;
+  avaxMint: PublicKey;
   className?: string;
 };
 
-export function AtxWithdrawButton({
+export function AvaxWithdrawButton({
   connection,
   wallet,
   programId,
-  atxMint,
+  avaxMint,
   className,
 }: WithdrawButtonProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -54,7 +54,7 @@ export function AtxWithdrawButton({
         connection,
         wallet,
         programId,
-        atxMint,
+        avaxMint,
       });
 
       setMessage(`Exchange succeeded. Signature: ${signature}`);

@@ -7,26 +7,26 @@ use anchor_spl::{
 declare_id!("Fg6PaFpoGXkYsidMpWxTWqkqkR3Rr1VQw7B7h2xq1dJ");
 
 #[program]
-pub mod atx_points_exchange {
+pub mod avax_points_exchange {
     use super::*;
 
     pub fn initialize_config(ctx: Context<InitializeConfig>) -> Result<()> {
         require_keys_neq!(ctx.accounts.owner.key(), Pubkey::default(), ExchangeError::InvalidAddress);
-        require_keys_neq!(ctx.accounts.atx_mint.key(), Pubkey::default(), ExchangeError::InvalidAddress);
+        require_keys_neq!(ctx.accounts.avax_mint.key(), Pubkey::default(), ExchangeError::InvalidAddress);
 
         let config = &mut ctx.accounts.config;
         config.owner = ctx.accounts.owner.key();
         config.is_paused = false;
         config.points_per_exchange = GlobalConfig::DEFAULT_POINTS_PER_EXCHANGE;
-        config.atx_per_exchange = GlobalConfig::DEFAULT_ATX_PER_EXCHANGE;
-        config.atx_mint = ctx.accounts.atx_mint.key();
+        config.avax_per_exchange = GlobalConfig::DEFAULT_AVAX_PER_EXCHANGE;
+        config.avax_mint = ctx.accounts.avax_mint.key();
         config.exchange_counter = 0;
 
         emit!(ConfigInitialized {
             owner: config.owner,
-            atx_mint: config.atx_mint,
+            avax_mint: config.avax_mint,
             points_per_exchange: config.points_per_exchange,
-            atx_per_exchange: config.atx_per_exchange,
+            avax_per_exchange: config.avax_per_exchange,
         });
 
         Ok(())
@@ -99,8 +99,8 @@ pub mod atx_points_exchange {
             ExchangeError::ExchangePaused
         );
         require_keys_eq!(
-            ctx.accounts.atx_mint.key(),
-            config.atx_mint,
+            ctx.accounts.avax_mint.key(),
+            config.avax_mint,
             ExchangeError::InvalidMint
         );
 
@@ -139,7 +139,7 @@ pub mod atx_points_exchange {
             signer_seeds,
         );
 
-        token::transfer(transfer_ctx, config.atx_per_exchange)
+        token::transfer(transfer_ctx, config.avax_per_exchange)
             .map_err(|_| error!(ExchangeError::TransferFailed))?;
 
         let exchange_id = config.exchange_counter;
@@ -151,7 +151,7 @@ pub mod atx_points_exchange {
         let record = &mut ctx.accounts.exchange_record;
         record.user = user_key;
         record.points_used = config.points_per_exchange;
-        record.atx_received = config.atx_per_exchange;
+        record.avax_received = config.avax_per_exchange;
         record.timestamp = user_points.last_exchange_time;
         record.exchange_id = exchange_id;
 
@@ -159,7 +159,7 @@ pub mod atx_points_exchange {
             exchange_id,
             user: user_key,
             points_used: record.points_used,
-            atx_received: record.atx_received,
+            avax_received: record.avax_received,
             timestamp: record.timestamp,
         });
 
@@ -170,8 +170,8 @@ pub mod atx_points_exchange {
         require_owner(&ctx.accounts.config, &ctx.accounts.owner)?;
         require!(amount > 0, ExchangeError::InvalidTokenAmount);
         require_keys_eq!(
-            ctx.accounts.atx_mint.key(),
-            ctx.accounts.config.atx_mint,
+            ctx.accounts.avax_mint.key(),
+            ctx.accounts.config.avax_mint,
             ExchangeError::InvalidMint
         );
 
@@ -214,7 +214,7 @@ pub struct InitializeConfig<'info> {
         bump
     )]
     pub config: Account<'info, GlobalConfig>,
-    pub atx_mint: Account<'info, Mint>,
+    pub avax_mint: Account<'info, Mint>,
     #[account(
         seeds = [VaultAuthority::SEED_PREFIX, config.key().as_ref()],
         bump
@@ -224,7 +224,7 @@ pub struct InitializeConfig<'info> {
     #[account(
         init_if_needed,
         payer = owner,
-        associated_token::mint = atx_mint,
+        associated_token::mint = avax_mint,
         associated_token::authority = vault_authority
     )]
     pub vault_token_account: Account<'info, TokenAccount>,
@@ -295,7 +295,7 @@ pub struct ExchangePoints<'info> {
         bump
     )]
     pub exchange_record: Account<'info, ExchangeRecord>,
-    pub atx_mint: Account<'info, Mint>,
+    pub avax_mint: Account<'info, Mint>,
     #[account(
         seeds = [VaultAuthority::SEED_PREFIX, config.key().as_ref()],
         bump
@@ -304,14 +304,14 @@ pub struct ExchangePoints<'info> {
     pub vault_authority: UncheckedAccount<'info>,
     #[account(
         mut,
-        associated_token::mint = atx_mint,
+        associated_token::mint = avax_mint,
         associated_token::authority = vault_authority
     )]
     pub vault_token_account: Account<'info, TokenAccount>,
     #[account(
         init_if_needed,
         payer = user,
-        associated_token::mint = atx_mint,
+        associated_token::mint = avax_mint,
         associated_token::authority = user
     )]
     pub user_token_account: Account<'info, TokenAccount>,
@@ -331,7 +331,7 @@ pub struct WithdrawTokens<'info> {
         bump
     )]
     pub config: Account<'info, GlobalConfig>,
-    pub atx_mint: Account<'info, Mint>,
+    pub avax_mint: Account<'info, Mint>,
     #[account(
         seeds = [VaultAuthority::SEED_PREFIX, config.key().as_ref()],
         bump
@@ -340,14 +340,14 @@ pub struct WithdrawTokens<'info> {
     pub vault_authority: UncheckedAccount<'info>,
     #[account(
         mut,
-        associated_token::mint = atx_mint,
+        associated_token::mint = avax_mint,
         associated_token::authority = vault_authority
     )]
     pub vault_token_account: Account<'info, TokenAccount>,
     #[account(
         init_if_needed,
         payer = owner,
-        associated_token::mint = atx_mint,
+        associated_token::mint = avax_mint,
         associated_token::authority = owner
     )]
     pub owner_token_account: Account<'info, TokenAccount>,
@@ -375,7 +375,7 @@ impl UserPoints {
 pub struct ExchangeRecord {
     pub user: Pubkey,
     pub points_used: u64,
-    pub atx_received: u64,
+    pub avax_received: u64,
     pub timestamp: i64,
     pub exchange_id: u64,
 }
@@ -390,15 +390,15 @@ pub struct GlobalConfig {
     pub owner: Pubkey,
     pub is_paused: bool,
     pub points_per_exchange: u64,
-    pub atx_per_exchange: u64,
-    pub atx_mint: Pubkey,
+    pub avax_per_exchange: u64,
+    pub avax_mint: Pubkey,
     pub exchange_counter: u64,
 }
 
 impl GlobalConfig {
     pub const SEED_PREFIX: &'static [u8] = b"global-config";
     pub const DEFAULT_POINTS_PER_EXCHANGE: u64 = 1_000;
-    pub const DEFAULT_ATX_PER_EXCHANGE: u64 = 1_000_000;
+    pub const DEFAULT_AVAX_PER_EXCHANGE: u64 = 1_000_000;
 }
 
 pub struct VaultAuthority;
@@ -410,9 +410,9 @@ impl VaultAuthority {
 #[event]
 pub struct ConfigInitialized {
     pub owner: Pubkey,
-    pub atx_mint: Pubkey,
+    pub avax_mint: Pubkey,
     pub points_per_exchange: u64,
-    pub atx_per_exchange: u64,
+    pub avax_per_exchange: u64,
 }
 
 #[event]
@@ -434,7 +434,7 @@ pub struct PointsExchanged {
     pub exchange_id: u64,
     pub user: Pubkey,
     pub points_used: u64,
-    pub atx_received: u64,
+    pub avax_received: u64,
     pub timestamp: i64,
 }
 
@@ -451,7 +451,7 @@ fn require_owner(config: &GlobalConfig, owner: &Signer<'_>) -> Result<()> {
 
 fn require_config_ready(config: &GlobalConfig) -> Result<()> {
     require_keys_neq!(config.owner, Pubkey::default(), ExchangeError::ConfigNotInitialized);
-    require_keys_neq!(config.atx_mint, Pubkey::default(), ExchangeError::ConfigNotInitialized);
+    require_keys_neq!(config.avax_mint, Pubkey::default(), ExchangeError::ConfigNotInitialized);
     Ok(())
 }
 
@@ -479,7 +479,7 @@ pub enum ExchangeError {
     ExchangePaused,
     #[msg("Only the contract owner can perform this action.")]
     NotOwner,
-    #[msg("ATX token transfer failed.")]
+    #[msg("AVAX token transfer failed.")]
     TransferFailed,
     #[msg("Invalid wallet or mint address.")]
     InvalidAddress,
@@ -489,7 +489,7 @@ pub enum ExchangeError {
     MathOverflow,
     #[msg("The caller is not authorized to operate on this user account.")]
     UnauthorizedUser,
-    #[msg("The provided mint does not match the configured ATX mint.")]
+    #[msg("The provided mint does not match the configured AVAX mint.")]
     InvalidMint,
     #[msg("Points amount must be greater than zero.")]
     InvalidPointsAmount,

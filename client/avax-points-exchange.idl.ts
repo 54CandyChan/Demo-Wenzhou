@@ -1,8 +1,8 @@
 import type { Idl } from "@coral-xyz/anchor";
 
-export const ATX_POINTS_EXCHANGE_IDL: Idl = {
+export const AVAX_POINTS_EXCHANGE_IDL: Idl = {
   version: "0.1.0",
-  name: "atx_points_exchange",
+  name: "avax_points_exchange",
   instructions: [
     {
       name: "exchangePoints",
@@ -11,7 +11,7 @@ export const ATX_POINTS_EXCHANGE_IDL: Idl = {
         { name: "config", isMut: true, isSigner: false },
         { name: "userPoints", isMut: true, isSigner: false },
         { name: "exchangeRecord", isMut: true, isSigner: false },
-        { name: "atxMint", isMut: false, isSigner: false },
+        { name: "avaxMint", isMut: false, isSigner: false },
         { name: "vaultAuthority", isMut: false, isSigner: false },
         { name: "vaultTokenAccount", isMut: true, isSigner: false },
         { name: "userTokenAccount", isMut: true, isSigner: false },
@@ -32,8 +32,8 @@ export const ATX_POINTS_EXCHANGE_IDL: Idl = {
           { name: "owner", type: "publicKey" },
           { name: "isPaused", type: "bool" },
           { name: "pointsPerExchange", type: "u64" },
-          { name: "atxPerExchange", type: "u64" },
-          { name: "atxMint", type: "publicKey" },
+          { name: "avaxPerExchange", type: "u64" },
+          { name: "avaxMint", type: "publicKey" },
           { name: "exchangeCounter", type: "u64" }
         ]
       }
@@ -57,7 +57,7 @@ export const ATX_POINTS_EXCHANGE_IDL: Idl = {
         fields: [
           { name: "user", type: "publicKey" },
           { name: "pointsUsed", type: "u64" },
-          { name: "atxReceived", type: "u64" },
+          { name: "avaxReceived", type: "u64" },
           { name: "timestamp", type: "i64" },
           { name: "exchangeId", type: "u64" }
         ]
@@ -71,7 +71,7 @@ export const ATX_POINTS_EXCHANGE_IDL: Idl = {
         { name: "exchangeId", type: "u64", index: false },
         { name: "user", type: "publicKey", index: false },
         { name: "pointsUsed", type: "u64", index: false },
-        { name: "atxReceived", type: "u64", index: false },
+        { name: "avaxReceived", type: "u64", index: false },
         { name: "timestamp", type: "i64", index: false }
       ]
     }
@@ -80,12 +80,12 @@ export const ATX_POINTS_EXCHANGE_IDL: Idl = {
     { code: 6000, name: "InsufficientPoints", msg: "Insufficient points for this exchange." },
     { code: 6001, name: "ExchangePaused", msg: "The exchange feature is currently paused." },
     { code: 6002, name: "NotOwner", msg: "Only the contract owner can perform this action." },
-    { code: 6003, name: "TransferFailed", msg: "ATX token transfer failed." },
+    { code: 6003, name: "TransferFailed", msg: "AVAX token transfer failed." },
     { code: 6004, name: "InvalidAddress", msg: "Invalid wallet or mint address." },
     { code: 6005, name: "ConfigNotInitialized", msg: "The contract configuration has not been initialized." },
     { code: 6006, name: "MathOverflow", msg: "Math overflow or underflow detected." },
     { code: 6007, name: "UnauthorizedUser", msg: "The caller is not authorized to operate on this user account." },
-    { code: 6008, name: "InvalidMint", msg: "The provided mint does not match the configured ATX mint." },
+    { code: 6008, name: "InvalidMint", msg: "The provided mint does not match the configured AVAX mint." },
     { code: 6009, name: "InvalidPointsAmount", msg: "Points amount must be greater than zero." },
     { code: 6010, name: "InvalidTokenAmount", msg: "Token amount must be greater than zero." }
   ]
