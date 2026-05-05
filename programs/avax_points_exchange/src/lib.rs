@@ -4,7 +4,7 @@ use anchor_spl::{
     token::{self, Mint, Token, TokenAccount, Transfer},
 };
 
-declare_id!("Fg6PaFpoGXkYsidMpWxTWqkqkR3Rr1VQw7B7h2xq1dJ");
+declare_id!("Hs768q1NX13tbbBHJZrHXEhGtMv666UANzVjy2AakqX1");
 
 #[program]
 pub mod avax_points_exchange {

@@ -27,8 +27,10 @@ Included files:
    - `get_exchange_records(user_pubkey)`
    - `get_global_config()`
 
-2. The current Program ID is still a placeholder and must be replaced before deployment.
-   Update both:
+2. The current deployed Devnet Program ID is:
+   - `Hs768q1NX13tbbBHJZrHXEhGtMv666UANzVjy2AakqX1`
+
+   It has already been written to:
    - `programs/avax_points_exchange/src/lib.rs`
    - `Anchor.toml`
 
@@ -55,11 +57,9 @@ anchor build
 anchor deploy
 ```
 
-After deployment, replace the generated Program ID in:
+After deployment, also copy this Program ID into your frontend environment config:
 
-- `programs/avax_points_exchange/src/lib.rs`
-- `Anchor.toml`
-- your frontend environment config
+- `Hs768q1NX13tbbBHJZrHXEhGtMv666UANzVjy2AakqX1`
 
 ### 4. Initialize Config
 

@@ -3,7 +3,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-avax_points_exchange = "Fg6PaFpoGXkYsidMpWxTWqkqkR3Rr1VQw7B7h2xq1dJ"
+avax_points_exchange = "Hs768q1NX13tbbBHJZrHXEhGtMv666UANzVjy2AakqX1"
 
 [registry]
 url = "https://api.apr.dev"
